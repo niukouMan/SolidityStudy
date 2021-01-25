@@ -30,13 +30,14 @@ import static com.iccbank.demotoken.constants.Constant.TOKEN_ADDRESS;
 
 @Service
 @Slf4j
-public class FiexbleSupplyTokenService {
+public class FiexbleSupplyTokenService implements ITokenService {
 
-    String privateKey = "9412019ee995a7490f655bb1b665aac3b9631873b3bb6b1ecfe440afd13d01e4";
+    String privateKey = "私钥";
 
     @Autowired
     private EthInvoke ethInvoke;
 
+    @Override
     public void mint(String fromAddress,String address,BigInteger amount){
         BigInteger nonce = ethInvoke.getNonce(fromAddress);
         BigInteger gasPrice = ethInvoke.getCurrentGasPrice();
@@ -76,16 +77,17 @@ public class FiexbleSupplyTokenService {
 
     /**
      * 燃烧代币
-     * @param fromAddress
-     * @param address
-     * @param amount
+     * @param adminAddress
+     * @param burnFromAddress
+     * @param burnAmount
      */
-    public void burn(String fromAddress,String address,BigInteger amount){
-        BigInteger nonce = ethInvoke.getNonce(fromAddress);
+    @Override
+    public void burn(String adminAddress,String burnFromAddress,BigInteger burnAmount){
+        BigInteger nonce = ethInvoke.getNonce(adminAddress);
         BigInteger gasPrice = ethInvoke.getCurrentGasPrice();
-        String funcABI = burnFuncABI(address, amount);
+        String funcABI = burnFuncABI(burnFromAddress, burnAmount);
 
-        Transaction transaction = Transaction.createFunctionCallTransaction(fromAddress, nonce, gasPrice, null, TOKEN_ADDRESS, funcABI);
+        Transaction transaction = Transaction.createFunctionCallTransaction(adminAddress, nonce, gasPrice, null, TOKEN_ADDRESS, funcABI);
         BigInteger transactionGasLimit = ethInvoke.getTransactionGasLimit(transaction, true);
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, transactionGasLimit, TOKEN_ADDRESS, funcABI);
 
@@ -121,6 +123,7 @@ public class FiexbleSupplyTokenService {
      * 查询代币总供应量
      * @param tokenAddress
      */
+    @Override
     public BigInteger totalSupply(String tokenAddress){
         CompletableFuture<EthCall> totalSupply = ethInvoke.callSimpleContractInfo(tokenAddress, "totalSupply");
         try {
@@ -139,6 +142,7 @@ public class FiexbleSupplyTokenService {
      * 当前管理员
      * @return
      */
+    @Override
     public String getCurrentAdmin(){
         CompletableFuture<EthCall> totalSupply = ethInvoke.callSimpleContractInfo(TOKEN_ADDRESS, "getOwner");
         try {
@@ -161,6 +165,7 @@ public class FiexbleSupplyTokenService {
      * @param newAdmin
      * @return
      */
+    @Override
     public boolean changeAdmin(String oldAdmin,String newAdmin){
         BigInteger nonce = ethInvoke.getNonce(oldAdmin);
         BigInteger gasPrice = ethInvoke.getCurrentGasPrice();
@@ -202,6 +207,7 @@ public class FiexbleSupplyTokenService {
      * 当前管理员
      * @return
      */
+    @Override
     public boolean isPaused(){
         CompletableFuture<EthCall> totalSupply = ethInvoke.callSimpleContractInfo(TOKEN_ADDRESS, "isPaused");
         try {
@@ -223,6 +229,7 @@ public class FiexbleSupplyTokenService {
      * @param adminAddress
      * @return
      */
+    @Override
     public boolean changePauseState(String adminAddress){
         BigInteger nonce = ethInvoke.getNonce(adminAddress);
         BigInteger gasPrice = ethInvoke.getCurrentGasPrice();

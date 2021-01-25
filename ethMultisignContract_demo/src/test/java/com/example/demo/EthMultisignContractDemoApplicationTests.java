@@ -30,7 +30,7 @@ class EthMultisignContractDemoApplicationTests {
     //mock data
     String[] activiteAddress = new String[]{"0xcb56a6b574d3d4f6aa8dea0ff5028ee7e5ea2300","0x55478526b9e609Fa7f8557914cC95476228C0e19","0x7971b576f602488e1c57f7b03b2e7a33fcb0ebca"};
     //对应的私钥
-    String[] activitePrivate = new String[]{"","",""};
+    String[] activitePrivate = new String[]{"私钥","",""};
     //多签合约
     String multiSignContractAddr = "0x6010ec43affe0559b2159a0816dc8f669d657955";
 
